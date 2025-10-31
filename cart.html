@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tu carrito — South Side</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <header>
+    <img src="assets/logo.png" alt="South Side logo" class="logo" />
+    <nav>
+      <ul>
+        <li><a href="index.html">Tienda</a></li>
+        <li><a href="#form">Finalizar compra</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <section class="cart">
+      <div class="checkout-steps">
+        <div class="step-indicator" data-step="0">1<br><span>Carrito</span></div>
+        <div class="step-line"></div>
+        <div class="step-indicator" data-step="1">2<br><span>Entrega</span></div>
+        <div class="step-line"></div>
+        <div class="step-indicator" data-step="2">3<br><span>Pago</span></div>
+      </div>
+
+      <div class="checkout-steps-content">
+        <div class="checkout-step" data-step="0">
+          <h2>Tu carrito</h2>
+          <div class="cart-and-summary">
+            <div class="cart-list">
+              <ul id="cart-items"></ul>
+            </div>
+            <aside class="summary-card">
+              <h3 class="card-title">Resumen del pedido</h3>
+              <ul id="summary-items"></ul>
+              <div class="summary-total">
+                <span>Total</span>
+                <strong id="summary-total-text">$0</strong>
+              </div>
+              <div class="step-actions" style="margin-top:14px">
+                <button id="to-delivery" class="primary">Continuar a entrega</button>
+              </div>
+            </aside>
+          </div>
+        </div>
+
+        <div class="checkout-step" data-step="1" style="display:none;">
+          <h2>Datos de envío</h2>
+          <p>Revisa y completa tus datos antes de continuar al pago.</p>
+          <form id="shipping-form">
+            <div class="delivery-card">
+              <div class="form-grid" id="delivery-fields">
+                <div class="form-row">
+                  <label for="nombre">Nombre completo</label>
+                  <input type="text" id="nombre" placeholder="Tu nombre y apellido" required>
+                </div>
+
+                <div class="form-row">
+                  <label for="direccion">Dirección</label>
+                  <input type="text" id="direccion" placeholder="Calle y número" required>
+                </div>
+
+                <div class="form-row">
+                  <label for="ciudad">Ciudad</label>
+                  <input type="text" id="ciudad" placeholder="Ciudad" required>
+                </div>
+
+                <div class="form-row">
+                  <label for="codigo_postal">Código postal</label>
+                  <input type="text" id="codigo_postal" placeholder="Ej: 9120" required>
+                </div>
+
+                <div class="form-row">
+                  <label for="email">Correo electrónico</label>
+                  <input type="email" id="email" placeholder="you@ejemplo.com" required>
+                </div>
+
+                <div class="form-row">
+                  <label for="telefono">Teléfono</label>
+                  <input type="tel" id="telefono" placeholder="Código + número" required>
+                </div>
+              </div>
+
+              <div class="form-row note">
+                <label><input type="checkbox" id="save-info"> Guardar mis datos para la próxima compra</label>
+              </div>
+
+              <div class="step-actions">
+                <button type="button" id="back-to-cart" class="secondary">Volver al carrito</button>
+                <button type="button" id="to-payment" class="primary">Continuar a pago</button>
+              </div>
+            </div>
+            <!-- Hidden payment controls (visual step is in steps container) -->
+            <input type="hidden" name="payment_method" id="payment_method" value="mercadopago">
+          </form>
+        </div>
+
+        <div class="checkout-step" data-step="2" style="display:none;">
+          <h2>Método de pago</h2>
+          <div class="payment-methods">
+            <label><input type="radio" name="payment" value="mercadopago" checked> Tarjeta (MercadoPago)</label>
+            <label><input type="radio" name="payment" value="transfer"> Transferencia</label>
+          </div>
+          <div class="step-actions">
+            <button type="button" id="back-to-delivery" class="secondary">Volver</button>
+            <button type="submit" id="place-order" class="primary">Realizar pedido</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- standalone form section removed — form is inside Entrega step now -->
+  </main>
+
+  <footer>
+    <p>© 2025 SOUTH SIDE — Hecho en el Sur.</p>
+  </footer>
+
+  <script src="script.js"></script>
+  <script>
+    // Debug helper: detect if external stylesheet loaded and warn
+    (function(){
+      const hasStyle = Array.from(document.styleSheets).some(s=>s.href && s.href.endsWith('style.css'));
+      if(!hasStyle) console.warn('style.css not detected by the browser. If the page looks unstyled check the network/devtools.');
+    })();
+  </script>
+</body>
+</html>

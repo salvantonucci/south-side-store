@@ -6,7 +6,7 @@ class Particle {
     this.size = Math.random() * 3 + 1;
     this.speedX = Math.random() * 2 - 1;
     this.speedY = Math.random() * 2 - 1;
-    this.color = '#ff007b';
+    this.color = '#ffffffff';
     this.opacity = Math.random() * 0.5 + 0.2;
   }
 
@@ -136,7 +136,7 @@ class ParticleSystem {
 
         if (distance < 100) {
           this.ctx.beginPath();
-          this.ctx.strokeStyle = '#ff007b';
+          this.ctx.strokeStyle = '#ffffffff';
           this.ctx.globalAlpha = 0.2 * (1 - distance / 100);
           this.ctx.lineWidth = 1;
           this.ctx.moveTo(this.particles[i].x, this.particles[i].y);

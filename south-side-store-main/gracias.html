@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Gracias por tu compra</title>
+</head>
+<body>
+  <h1>¡Pago aprobado! 🎉</h1>
+  <p>Recibimos tu pago. En breve te vamos a contactar.</p>
+
+  <script>
+    // limpiar carrito del navegador
+    localStorage.removeItem("southside_cart_v1");
+
+    // opcional: avisar por Formspree
+    fetch("https://formspree.io/f/TU_ENDPOINT", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        mensaje: "Compra aprobada desde Mercado Pago",
+        carrito: "ver en sistema" // o mandás el localStorage antes de borrarlo
+      })
+    });
+  </script>
+</body>
+</html>

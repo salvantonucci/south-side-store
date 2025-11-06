@@ -35,22 +35,29 @@ function parsePriceString(str) {
   return parseInt(cleaned, 10) || 0;
 }
 
-// === agregar al carrito desde index ===
-function addToCart(productId) {
+// === agregar al carrito ===
+function addToCart(productId, buttonEl) {
   const card = document.querySelector(`.product[data-id="${productId}"]`);
   if (!card) return alert('Producto no encontrado.');
 
   const name = card.querySelector('h3').textContent.trim();
   const price = parsePriceString(card.dataset.price || card.querySelector('p').textContent);
+  const sizeSelect = card.querySelector('.size-selector');
+  const size = sizeSelect ? sizeSelect.value : '';
+
+  if (!size) {
+    alert('Por favor seleccioná un talle antes de agregar al carrito 🧢');
+    return;
+  }
 
   loadCartFromStorage();
-  cart.push({ id: productId, product: name, price });
+  cart.push({ id: productId, product: name, price, size });
   saveCart();
   updateCartBadge();
-  alert(`${name} agregado al carrito 🛒`);
+  alert(`${name} (${size}) agregado al carrito 🛒`);
 }
 
-// === mostrar carrito en cart.html ===
+// === mostrar carrito ===
 function renderCart() {
   loadCartFromStorage();
   const list = document.getElementById('cart-items');
@@ -60,7 +67,7 @@ function renderCart() {
   cart.forEach((item, i) => {
     const li = document.createElement('li');
     li.innerHTML = `
-      <span>${item.product}</span>
+      <span>${item.product} <small>(${item.size})</small></span>
       <div>
         <span>$${item.price.toLocaleString('es-AR')}</span>
         <button class="remove-btn" onclick="removeFromCart(${i})">✕</button>
@@ -119,6 +126,20 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
     }
+
+    // === Completar campos ocultos antes de pagar ===
+    const hiddenCart = document.getElementById("hidden_cart");
+    const hiddenTotal = document.getElementById("hidden_total");
+    const hiddenSizes = document.getElementById("hidden_sizes");
+
+    if (hiddenCart) hiddenCart.value = JSON.stringify(cart, null, 2);
+    if (hiddenTotal) hiddenTotal.value = `$${total.toLocaleString('es-AR')}`;
+
+    if (hiddenSizes) {
+      const talles = cart.map(item => `${item.product} — Talle: ${item.size}`).join(', ');
+      hiddenSizes.value = talles || 'Sin talle especificado';
+    }
+
     goToStep(2);
   });
 
@@ -129,23 +150,21 @@ document.addEventListener('DOMContentLoaded', () => {
   if (backToDelivery) backToDelivery.addEventListener('click', () => goToStep(1));
 });
 
-// === MERCADO PAGO: función que llama el botón ===
+// === MERCADO PAGO ===
 async function pagarConMercadoPago() {
   if (!cart.length) {
     alert("Tu carrito está vacío 🛒");
     return;
   }
 
-  // 1. armar items para MP
   const items = cart.map(p => ({
-    title: p.product,
+    title: `${p.product} (${p.size})`,
     quantity: 1,
     unit_price: p.price
   }));
 
   try {
-    // 2. pedirle al PHP que cree la preferencia
-    const resp = await fetch("https://tudominio.com/crear-preferencia.php", {
+    const resp = await fetch(`${window.location.origin}/crear-preferencia.php`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ items })
@@ -153,7 +172,6 @@ async function pagarConMercadoPago() {
 
     const data = await resp.json();
 
-    // 3. si vino bien, redirigimos
     if (data.init_point) {
       window.location.href = data.init_point;
     } else {

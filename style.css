@@ -619,3 +619,53 @@ footer {
     align-items: center;
   }
 }
+/* 🔧 FIX: Hover sin bloquear botones */
+.product::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, rgba(255,255,255,0.08), transparent 70%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none; /* ✅ ESTA LÍNEA ES LA ÚNICA CORRECCIÓN */
+}
+
+.product:hover::after {
+  opacity: 1;
+}
+/* ===============================
+   SELECTOR DE TALLES (ajuste visual)
+=============================== */
+.size-selector {
+  width: 100%;
+  background: #111;
+  color: #fff;
+  border: 2px solid #333;
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-size: 0.95rem;
+  font-family: 'Unbounded', sans-serif;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  outline: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: center;
+  margin-bottom: 18px; /* 🔥 separación visual respecto al botón */
+}
+
+.size-selector:hover,
+.size-selector:focus {
+  border-color: #fff;
+  background: #1a1a1a;
+  color: #fff;
+  box-shadow: 0 0 10px rgba(255,255,255,0.08);
+  transform: scale(1.02);
+}
+
+.size-selector option {
+  background: #0e0e0e;
+  color: #fff;
+  padding: 10px;
+}

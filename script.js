@@ -180,6 +180,6 @@ async function pagarConMercadoPago() {
     }
   } catch (err) {
     console.error(err);
-    alert("No se pudo conectar con tu servidor (crear-preferencia.php).");
+    alert("No se pudo conectar con tu servidor.");
   }
 }

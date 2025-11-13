@@ -1,11 +1,14 @@
 // === CARRITO ===
 const CART_KEY = 'southside_cart_v1';
-let cart = JSON.parse(localStorage.getItem(CART_KEY)) || [];
+let cart = [];
 let total = 0;
 
 function loadCartFromStorage() {
-  try { cart = JSON.parse(localStorage.getItem(CART_KEY)) || []; }
-  catch { cart = []; }
+  try {
+    cart = JSON.parse(localStorage.getItem(CART_KEY)) || [];
+  } catch {
+    cart = [];
+  }
 }
 
 function saveCart() {
@@ -27,36 +30,39 @@ function updateCartBadge() {
   badge.textContent = cart.length;
 }
 
+// Parseo robusto de precios desde data-price
 function parsePriceString(str) {
-  return parseInt(String(str).replace(/[^0-9]/g, ''), 10) || 0;
+  if (!str) return 0;
+  return Number(String(str).replace(/[^0-9]/g, ""));
 }
 
-function addToCart(productId, buttonEl) {
+// Agregar al carrito
+function addToCart(productId) {
   const card = document.querySelector(`.product[data-id="${productId}"]`);
   if (!card) return alert('Producto no encontrado.');
 
   const name = card.querySelector('h3').textContent.trim();
-  const price = parsePriceString(card.dataset.price || card.querySelector('p').textContent);
-
+  const price = parsePriceString(card.dataset.price);
   const sizeSelect = card.querySelector('.size-selector');
   const size = sizeSelect ? sizeSelect.value : '';
 
   if (!size) {
-    alert('Seleccioná un talle antes de agregar 🧢');
+    alert('Seleccioná un talle antes de continuar.');
     return;
   }
 
   loadCartFromStorage();
   cart.push({ id: productId, product: name, price, size });
   saveCart();
-  updateCartBadge();
   alert(`${name} (${size}) agregado al carrito 🛒`);
 }
 
+// Render carrito
 function renderCart() {
   loadCartFromStorage();
   const list = document.getElementById('cart-items');
   if (!list) return;
+
   list.innerHTML = '';
 
   cart.forEach((item, i) => {
@@ -66,8 +72,7 @@ function renderCart() {
       <div>
         <span>$${item.price.toLocaleString('es-AR')}</span>
         <button class="remove-btn" onclick="removeFromCart(${i})">✕</button>
-      </div>
-    `;
+      </div>`;
     list.appendChild(li);
   });
 
@@ -87,60 +92,63 @@ function removeFromCart(i) {
   renderCart();
 }
 
-// === CHECKOUT STEPS ===
-let currentStep = 0;
-function goToStep(n) {
-  document.querySelectorAll('.checkout-step').forEach((s, i) => {
-    s.style.display = i === n ? '' : 'none';
-  });
-  document.querySelectorAll('.step-indicator').forEach((el, i) => {
-    el.classList.toggle('active', i === n);
-    el.classList.toggle('done', i < n);
-  });
-  currentStep = n;
+// === PASOS DEL CHECKOUT ===
+function setupCheckoutSteps() {
+  const step0 = document.querySelector('.checkout-step[data-step="0"]');
+  const step1 = document.querySelector('.checkout-step[data-step="1"]');
+  const step2 = document.querySelector('.checkout-step[data-step="2"]');
+
+  // Si no estamos en cart.html, salimos
+  if (!step0 || !step1 || !step2) {
+    console.log("No hay pasos de checkout en esta página.");
+    return;
+  }
+
+  const continueBtn    = document.getElementById("continue-btn");
+  const backToCart     = document.getElementById("back-to-cart");
+  const toPayment      = document.getElementById("to-payment");
+  const backToDelivery = document.getElementById("back-to-delivery");
+
+  // Carrito → Entrega
+  if (continueBtn) {
+    continueBtn.addEventListener("click", () => {
+      console.log("Click en Continuar a entrega");
+      step0.style.display = "none";
+      step1.style.display = "block";
+    });
+  }
+
+  // Entrega → Carrito
+  if (backToCart) {
+    backToCart.addEventListener("click", () => {
+      console.log("Click en Volver al carrito");
+      step1.style.display = "none";
+      step0.style.display = "block";
+    });
+  }
+
+  // Entrega → Pago
+  if (toPayment) {
+    toPayment.addEventListener("click", () => {
+      console.log("Click en Continuar a pago");
+      step1.style.display = "none";
+      step2.style.display = "block";
+    });
+  }
+
+  // Pago → Entrega
+  if (backToDelivery) {
+    backToDelivery.addEventListener("click", () => {
+      console.log("Click en Volver a entrega");
+      step2.style.display = "none";
+      step1.style.display = "block";
+    });
+  }
 }
-
-document.addEventListener('DOMContentLoaded', () => {
-  updateCartBadge();
-  renderCart();
-
-  const toDelivery = document.getElementById('to-delivery');
-  if (toDelivery)
-    toDelivery.addEventListener('click', () => {
-      if (!cart.length) return alert('Tu carrito está vacío 🛒');
-      goToStep(1);
-    });
-
-  const toPayment = document.getElementById('to-payment');
-  if (toPayment)
-    toPayment.addEventListener('click', () => {
-      const required = ['nombre', 'direccion', 'ciudad', 'codigo_postal', 'email', 'telefono'];
-      for (let id of required) {
-        const el = document.getElementById(id);
-        if (!el.checkValidity()) {
-          el.reportValidity();
-          return;
-        }
-      }
-
-      const hiddenCart = document.getElementById("hidden_cart");
-      const hiddenTotal = document.getElementById("hidden_total");
-
-      if (hiddenCart) hiddenCart.value = JSON.stringify(cart, null, 2);
-      if (hiddenTotal) hiddenTotal.value = `$${total.toLocaleString('es-AR')}`;
-
-      goToStep(2);
-    });
-
-  const backToCart = document.getElementById('back-to-cart');
-  if (backToCart) backToCart.addEventListener('click', () => goToStep(0));
-
-  const backToDelivery = document.getElementById('back-to-delivery');
-  if (backToDelivery) backToDelivery.addEventListener('click', () => goToStep(1));
-});
 
 // === MERCADO PAGO ===
 async function pagarConMercadoPago() {
+  loadCartFromStorage();
   if (!cart.length) return alert("Tu carrito está vacío 🛒");
 
   const items = cart.map(p => ({
@@ -150,7 +158,7 @@ async function pagarConMercadoPago() {
   }));
 
   try {
-    const resp = await fetch("http://localhost/southside/crear-preferencia.php", {
+    const resp = await fetch("https://southsidewear.store/crear-preferencia.php", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ items })
@@ -162,10 +170,18 @@ async function pagarConMercadoPago() {
       window.location.href = data.init_point;
     } else {
       console.log("Error:", data);
-      alert("No se pudo generar el pago. Verificá el token o el PHP.");
+      alert("No se pudo generar el pago. Revisá precios o el PHP.");
     }
   } catch (err) {
-    console.error(err);
-    alert("Error al conectar con el servidor.");
+    console.error("Error:", err);
+    alert("No se pudo conectar con el servidor.");
   }
 }
+
+// === INICIO GENERAL ===
+document.addEventListener('DOMContentLoaded', () => {
+  loadCartFromStorage();
+  updateCartBadge();
+  renderCart();
+  setupCheckoutSteps();
+});

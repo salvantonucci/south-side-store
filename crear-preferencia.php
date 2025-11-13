@@ -1,20 +1,18 @@
 <?php
 // crear-preferencia.php
 
-// Vamos a devolver JSON
 header("Content-Type: application/json");
-// Permitimos que tu JS del front llame a este PHP
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Headers: *");
 
-// 1. TU TOKEN DE MERCADO PAGO (de prueba por ahora)
-$ACCESS_TOKEN = "TEST-TU-TOKEN-DE-MP-AQUI"; // <-- CAMBIAR
+// TOKEN REAL DE PRODUCCIÓN
+$ACCESS_TOKEN = "APP_USR-5371829220109665-111219-f80402a99c412f799bb73ad9921c9b09-2986591652";
 
-// 2. Leer lo que mandó el frontend
+// Recibir items desde el frontend
 $input = json_decode(file_get_contents("php://input"), true);
 $items = $input["items"] ?? [];
 
-// 3. Armar el cuerpo para Mercado Pago
+// Cuerpo de la preferencia
 $body = [
     "items" => array_map(function($it) {
         return [
@@ -25,15 +23,14 @@ $body = [
         ];
     }, $items),
     "back_urls" => [
-        // 👇 estas 3 páginas las tenés que crear vos (abajo te las paso)
-        "success" => "https://tudominio.com/gracias.html",
-        "failure" => "https://tudominio.com/error.html",
-        "pending" => "https://tudominio.com/pending.html"
+        "success" => "https://TUDOMINIO.COM/gracias.html",
+        "failure" => "https://TUDOMINIO.COM/error.html",
+        "pending" => "https://TUDOMINIO.COM/pending.html"
     ],
     "auto_return" => "approved"
 ];
 
-// 4. Llamar a la API de Mercado Pago
+// Llamar API Mercado Pago
 $ch = curl_init();
 curl_setopt($ch, CURLOPT_URL, "https://api.mercadopago.com/checkout/preferences");
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -47,6 +44,6 @@ curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($body));
 $response = curl_exec($ch);
 curl_close($ch);
 
-// 5. Devolver lo que diga Mercado Pago al frontend
+// Enviar respuesta al frontend
 echo $response;
 ?>

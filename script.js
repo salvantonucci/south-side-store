@@ -4,11 +4,8 @@ let cart = JSON.parse(localStorage.getItem(CART_KEY)) || [];
 let total = 0;
 
 function loadCartFromStorage() {
-  try {
-    cart = JSON.parse(localStorage.getItem(CART_KEY)) || [];
-  } catch {
-    cart = [];
-  }
+  try { cart = JSON.parse(localStorage.getItem(CART_KEY)) || []; }
+  catch { cart = []; }
 }
 
 function saveCart() {
@@ -31,22 +28,21 @@ function updateCartBadge() {
 }
 
 function parsePriceString(str) {
-  const cleaned = String(str).replace(/[^0-9]/g, '');
-  return parseInt(cleaned, 10) || 0;
+  return parseInt(String(str).replace(/[^0-9]/g, ''), 10) || 0;
 }
 
-// === agregar al carrito ===
 function addToCart(productId, buttonEl) {
   const card = document.querySelector(`.product[data-id="${productId}"]`);
   if (!card) return alert('Producto no encontrado.');
 
   const name = card.querySelector('h3').textContent.trim();
   const price = parsePriceString(card.dataset.price || card.querySelector('p').textContent);
+
   const sizeSelect = card.querySelector('.size-selector');
   const size = sizeSelect ? sizeSelect.value : '';
 
   if (!size) {
-    alert('Por favor seleccioná un talle antes de agregar al carrito 🧢');
+    alert('Seleccioná un talle antes de agregar 🧢');
     return;
   }
 
@@ -57,7 +53,6 @@ function addToCart(productId, buttonEl) {
   alert(`${name} (${size}) agregado al carrito 🛒`);
 }
 
-// === mostrar carrito ===
 function renderCart() {
   loadCartFromStorage();
   const list = document.getElementById('cart-items');
@@ -92,7 +87,7 @@ function removeFromCart(i) {
   renderCart();
 }
 
-// === pasos del checkout ===
+// === CHECKOUT STEPS ===
 let currentStep = 0;
 function goToStep(n) {
   document.querySelectorAll('.checkout-step').forEach((s, i) => {
@@ -105,43 +100,37 @@ function goToStep(n) {
   currentStep = n;
 }
 
-// === onload ===
 document.addEventListener('DOMContentLoaded', () => {
   updateCartBadge();
   renderCart();
 
   const toDelivery = document.getElementById('to-delivery');
-  if (toDelivery) toDelivery.addEventListener('click', () => {
-    if (!cart.length) return alert('Tu carrito está vacío 🛒');
-    goToStep(1);
-  });
+  if (toDelivery)
+    toDelivery.addEventListener('click', () => {
+      if (!cart.length) return alert('Tu carrito está vacío 🛒');
+      goToStep(1);
+    });
 
   const toPayment = document.getElementById('to-payment');
-  if (toPayment) toPayment.addEventListener('click', () => {
-    const required = ['nombre', 'direccion', 'ciudad', 'codigo_postal', 'email', 'telefono'];
-    for (let id of required) {
-      const el = document.getElementById(id);
-      if (!el.checkValidity()) {
-        el.reportValidity();
-        return;
+  if (toPayment)
+    toPayment.addEventListener('click', () => {
+      const required = ['nombre', 'direccion', 'ciudad', 'codigo_postal', 'email', 'telefono'];
+      for (let id of required) {
+        const el = document.getElementById(id);
+        if (!el.checkValidity()) {
+          el.reportValidity();
+          return;
+        }
       }
-    }
 
-    // === Completar campos ocultos antes de pagar ===
-    const hiddenCart = document.getElementById("hidden_cart");
-    const hiddenTotal = document.getElementById("hidden_total");
-    const hiddenSizes = document.getElementById("hidden_sizes");
+      const hiddenCart = document.getElementById("hidden_cart");
+      const hiddenTotal = document.getElementById("hidden_total");
 
-    if (hiddenCart) hiddenCart.value = JSON.stringify(cart, null, 2);
-    if (hiddenTotal) hiddenTotal.value = `$${total.toLocaleString('es-AR')}`;
+      if (hiddenCart) hiddenCart.value = JSON.stringify(cart, null, 2);
+      if (hiddenTotal) hiddenTotal.value = `$${total.toLocaleString('es-AR')}`;
 
-    if (hiddenSizes) {
-      const talles = cart.map(item => `${item.product} — Talle: ${item.size}`).join(', ');
-      hiddenSizes.value = talles || 'Sin talle especificado';
-    }
-
-    goToStep(2);
-  });
+      goToStep(2);
+    });
 
   const backToCart = document.getElementById('back-to-cart');
   if (backToCart) backToCart.addEventListener('click', () => goToStep(0));
@@ -152,10 +141,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // === MERCADO PAGO ===
 async function pagarConMercadoPago() {
-  if (!cart.length) {
-    alert("Tu carrito está vacío 🛒");
-    return;
-  }
+  if (!cart.length) return alert("Tu carrito está vacío 🛒");
 
   const items = cart.map(p => ({
     title: `${p.product} (${p.size})`,
@@ -164,7 +150,7 @@ async function pagarConMercadoPago() {
   }));
 
   try {
-    const resp = await fetch(`${window.location.origin}/crear-preferencia.php`, {
+    const resp = await fetch("http://localhost/southside/crear-preferencia.php", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ items })
@@ -175,11 +161,11 @@ async function pagarConMercadoPago() {
     if (data.init_point) {
       window.location.href = data.init_point;
     } else {
-      console.log("Respuesta Mercado Pago:", data);
-      alert("No se pudo generar el pago. Revisa el token o el archivo PHP.");
+      console.log("Error:", data);
+      alert("No se pudo generar el pago. Verificá el token o el PHP.");
     }
   } catch (err) {
     console.error(err);
-    alert("No se pudo conectar con tu servidor.");
+    alert("Error al conectar con el servidor.");
   }
 }

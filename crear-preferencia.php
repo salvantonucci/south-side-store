@@ -34,9 +34,9 @@ $body = [
     }, $items),
 
     "back_urls" => [
-        "success" => "https://southsidewear.store/gracias.html",
-        "failure" => "https://southsidewear.store/error.html",
-        "pending" => "https://southsidewear.store/pending.html"
+        "success" => "https://southsidewear.store/gracias",
+        "failure" => "https://southsidewear.store/error",
+        "pending" => "https://southsidewear.store/pending"
     ],
     "auto_return" => "approved"
 ];

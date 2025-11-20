@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Producto — South Side</title>
+
+  <link rel="icon" href="assets/logo.png">
+  <link rel="stylesheet" href="style-v2.css">
+  <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800&display=swap" rel="stylesheet">
+</head>
+
+<body>
+  <header>
+    <img src="assets/logo.png" class="logo" alt="South Side Logo">
+    <nav>
+      <ul>
+        <li><a href="index.html">Tienda</a></li>
+        <li><a href="cart.html">Carrito 🛒</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="product-page">
+    <div class="product-page-content">
+
+      <!-- IMAGEN SIN ZOOM -->
+      <div class="product-img-box">
+        <img id="product-img" src="" alt="">
+      </div>
+
+      <!-- INFO DEL PRODUCTO -->
+      <div class="product-info-box">
+        <h1 id="product-name"></h1>
+        <p class="product-price" id="product-price"></p>
+
+        <div class="product-detail-line"></div>
+
+        <p id="product-description"></p>
+
+        <div class="size-area">
+          <label for="size-select">Talle:</label>
+          <select id="size-select" class="size-selector"></select>
+          <button class="guide-btn" id="open-guide">Guía de talles</button>
+        </div>
+
+        <button class="primary" id="addToCartBtn">Agregar al carrito</button>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- MODAL GUÍA DE TALLES (POP-UP) -->
+<div id="sizeModal" class="modal-bg">
+  <div class="modal-box">
+    <span class="modal-close">&times;</span>
+    <h2>Guía de Talles</h2>
+    <img src="assets/size-guide.png" alt="Guía de talles" class="modal-img">
+  </div>
+</div> 
+
+  <footer>
+    <p>© 2025 SOUTH SIDE — Hecho en el Sur.</p>
+  </footer>
+
+  <script src="script-v2.js"></script>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const productId = params.get("id");
+
+    fetch("products.json")
+      .then(res => res.json())
+      .then(PRODUCTS => {
+        const product = PRODUCTS[productId];
+        if (!product) {
+          document.body.innerHTML = "<h2 style='text-align:center;margin-top:80px;'>Producto no encontrado.</h2>";
+          return;
+        }
+
+        document.getElementById("product-name").textContent = product.name;
+        document.getElementById("product-price").textContent = "$" + product.price.toLocaleString("es-AR");
+        document.getElementById("product-img").src = product.image;
+        document.getElementById("product-description").textContent = product.description;
+
+        const sizeSelect = document.getElementById("size-select");
+        sizeSelect.innerHTML = '<option value="">Seleccionar talle</option>';
+        product.sizes.forEach(s => sizeSelect.innerHTML += `<option value="${s}">${s}</option>`);
+
+        document.getElementById("addToCartBtn").addEventListener("click", () => {
+          if (!sizeSelect.value) return alert("Seleccioná un talle antes de continuar.");
+
+          loadCartFromStorage();
+          cart.push({
+            id: product.id,
+            product: product.name,
+            price: product.price,
+            size: sizeSelect.value
+          });
+          saveCart();
+
+          alert(product.name + " agregado al carrito 🛒");
+        });
+      });
+
+    // MODAL POPUP
+const modal = document.getElementById("sizeModal");
+const openModal = document.getElementById("open-guide");
+const closeModal = document.querySelector(".modal-close");
+
+openModal.onclick = () => {
+  modal.style.display = "flex";
+};
+
+closeModal.onclick = () => {
+  modal.style.display = "none";
+};
+
+window.onclick = (e) => {
+  if (e.target === modal) modal.style.display = "none";
+};
+  </script>
+
+</body>
+</html>

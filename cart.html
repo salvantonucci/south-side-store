@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tu carrito — South Side</title>
+  <link rel="icon" href="assets/logo.png" />
+  <link rel="shortcut icon" type="image/x-icon" href="assets/favicon.ico" />
+  <link rel="apple-touch-icon" href="assets/logo.png" />
+  <meta name="theme-color" content="#0e0e0e" />
+  <link rel="stylesheet" href="style-v2.css">
+  <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <header>
+    <img src="assets/logo.png" alt="South Side logo" class="logo" />
+    <nav>
+      <ul>
+        <li><a href="index.html">Tienda</a></li>
+        <li><a href="#form">Finalizar compra</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <section class="cart">
+      <div class="checkout-steps">
+        <div class="step-indicator" data-step="0">1<br><span>Carrito</span></div>
+        <div class="step-line"></div>
+        <div class="step-indicator" data-step="1">2<br><span>Entrega</span></div>
+        <div class="step-line"></div>
+        <div class="step-indicator" data-step="2">3<br><span>Pago</span></div>
+      </div>
+
+      <div class="checkout-steps-content">
+        <!-- Paso 0: Carrito -->
+        <div class="checkout-step" data-step="0">
+          <h2>Tu carrito</h2>
+          <div class="cart-and-summary">
+            <div class="cart-list">
+              <ul id="cart-items"></ul>
+            </div>
+            <aside class="summary-card">
+              <h3 class="card-title">Resumen del pedido</h3>
+              <ul id="summary-items"></ul>
+              <div class="summary-total">
+                <span>Total</span>
+                <strong id="summary-total-text">$0</strong>
+              </div>
+              <div class="step-actions" style="margin-top:14px">
+                <button id="continue-btn" class="primary">Continuar a entrega</button>
+              </div>
+            </aside>
+          </div>
+        </div>
+
+        <!-- Paso 1: Datos de envío -->
+        <div class="checkout-step" data-step="1" style="display:none;">
+          <h2>Datos de envío</h2>
+          <p>Revisa y completa tus datos antes de continuar al pago.</p>
+
+          <!-- 🔥 Formulario original, ahora con Formspree -->
+          <form id="shipping-form" action="https://formspree.io/f/mpwogvnw" method="POST">
+            <div class="delivery-card">
+              <div class="form-grid" id="delivery-fields">
+                <div class="form-row">
+                  <label for="nombre">Nombre completo</label>
+                  <input type="text" id="nombre" name="nombre" placeholder="Tu nombre y apellido" required>
+                </div>
+
+                <div class="form-row">
+                  <label for="direccion">Dirección</label>
+                  <input type="text" id="direccion" name="direccion" placeholder="Calle y número" required>
+                </div>
+
+                <div class="form-row">
+                  <label for="ciudad">Ciudad</label>
+                  <input type="text" id="ciudad" name="ciudad" placeholder="Ciudad" required>
+                </div>
+
+                <div class="form-row">
+                  <label for="codigo_postal">Código postal</label>
+                  <input type="text" id="codigo_postal" name="codigo_postal" placeholder="Ej: 9120" required>
+                </div>
+
+                <div class="form-row">
+                  <label for="email">Correo electrónico</label>
+                  <input type="email" id="email" name="email" placeholder="you@ejemplo.com" required>
+                </div>
+
+                <div class="form-row">
+                  <label for="telefono">Teléfono</label>
+                  <input type="tel" id="telefono" name="telefono" placeholder="Código + número" required>
+                </div>
+              </div>
+
+              <div class="form-row note">
+                <label><input type="checkbox" id="save-info"> Guardar mis datos para la próxima compra</label>
+              </div>
+
+              <!-- 🔒 Campos ocultos que vamos a llenar desde JS -->
+              <input type="hidden" name="carrito" id="hidden_cart">
+              <input type="hidden" name="total" id="hidden_total">
+              <input type="hidden" name="_subject" value="Nuevo pedido — South Side">
+
+              <div class="step-actions">
+                <button type="button" id="back-to-cart" class="secondary">Volver al carrito</button>
+                <button type="button" id="to-payment" class="primary">Continuar a pago</button>
+              </div>
+            </div>
+
+            <!-- este ya estaba -->
+            <input type="hidden" name="payment_method" id="payment_method" value="mercadopago">
+          </form>
+        </div>
+
+        <!-- Paso 3: Pago -->
+<div class="checkout-step" data-step="2" style="display:none;">
+  <h2>Método de pago</h2>
+  <div class="payment-methods">
+    <label><input type="radio" name="payment" value="mercadopago" checked> Mercado Pago</label>
+  </div>
+  <div class="step-actions">
+    <button type="button" id="back-to-delivery" class="secondary">Volver</button>
+    <!-- ESTE es el botón que llama a JS -->
+    <button type="button" id="mp-pay" class="primary" onclick="pagarConMercadoPago()">Pagar con Mercado Pago</button>
+  </div>
+</div>
+
+  <footer>
+    <p>© 2025 SOUTH SIDE — Hecho en el Sur.</p>
+  </footer>
+
+  <script src="script-v2.js"></script>
+</body>
+</html>

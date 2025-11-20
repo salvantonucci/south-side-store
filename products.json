@@ -1,0 +1,21 @@
+{
+  "black-bite": {
+    "id": "black-bite",
+    "name": "BLACK BITE",
+    "price": 31900,
+    "image": "assets/drop1-black.jpg",
+    "images": ["assets/drop1-black.jpg"],
+    "sizes": ["M", "L"],
+    "description": "Oversize tee 280gsm de algodón premium."
+  },
+
+  "dead-rider": {
+    "id": "dead-rider",
+    "name": "DEAD RIDER",
+    "price": 31900,
+    "image": "assets/drop1-white.jpg",
+    "images": ["assets/drop1-white.jpg"],
+    "sizes": ["M", "L"],
+    "description": "Estampa vintage sobre algodón pesado."
+  }
+}

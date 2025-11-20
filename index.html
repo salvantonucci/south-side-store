@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SOUTH SIDE — DROP 001</title>
+
+  <!-- Favicon -->
+  <link rel="icon" href="assets/logo.png" />
+  <link rel="shortcut icon" type="image/x-icon" href="assets/logo.png" />
+  <link rel="apple-touch-icon" href="assets/logo.png" />
+
+  <meta name="theme-color" content="#0e0e0e" />
+  <link rel="stylesheet" href="style-v2.css">
+  <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css" />
+</head>
+
+<body>
+  <header>
+    <img src="assets/logo.png" alt="South Side logo" class="logo" />
+    <nav>
+      <ul>
+        <li><a href="#shop">Tienda</a></li>
+        <li><a href="cart.html">Carrito 🛒</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <section id="hero">
+    <h1 data-aos="fade-up">SOUTH SIDE</h1>
+    <p data-aos="fade-up" data-aos-delay="200">HECHO EN EL SUR</p>
+  </section>
+
+  <!-- ============================
+       TIENDA (DROP 001)
+  ============================ -->
+  <section id="shop" class="shop">
+
+    <!-- PRODUCTO 1 -->
+    <div class="product" data-aos="fade-right" data-id="black-bite" data-price="31900">
+      <a href="product.html?id=black-bite">
+        <img src="assets/drop1-black.jpg" alt="Black Bite">
+      </a>
+
+      <h3>Black Bite</h3>
+      <p>$31900 ARS</p>
+    </div>
+
+    <!-- PRODUCTO 2 -->
+    <div class="product" data-aos="fade-left" data-id="dead-rider" data-price="31900">
+      <a href="product.html?id=dead-rider">
+        <img src="assets/drop1-white.jpg" alt="Dead Rider">
+      </a>
+
+      <h3>Dead Rider</h3>
+      <p>$31900 ARS</p>
+    </div>
+
+  </section>
+
+  <footer>
+    <p>© 2025 SOUTH SIDE — Hecho en el Sur.</p>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="script-v2.js"></script>
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script>AOS.init({ duration: 800, once: true });</script>
+
+  <!-- Partículas -->
+  <script>
+    if (typeof ParticleSystem !== 'undefined') {
+      new ParticleSystem();
+    }
+  </script>
+</body>
+</html>

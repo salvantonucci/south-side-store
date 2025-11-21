@@ -1,3 +1,17 @@
 RewriteEngine On
-RewriteCond %{REQUEST_FILENAME}.html -f
+
+# Quitar .html de todas las páginas
+RewriteCond %{REQUEST_FILENAME} !-f
 RewriteRule ^([^/]+)/?$ $1.html [L]
+
+# Redirigir product/ID a product.html?id=ID
+RewriteCond %{REQUEST_URI} ^/product/([0-9]+)/?$
+RewriteRule ^ product.html?id=%1 [L,QSA]
+
+# Redirigir carrito limpio
+RewriteRule ^cart$ cart.html [L]
+
+# Redirigir gracias, error y pending
+RewriteRule ^gracias$ gracias.html [L]
+RewriteRule ^error$ error.html [L]
+RewriteRule ^pending$ pending.html [L]

@@ -1,73 +1,52 @@
 <?php
-// === Mercado Pago Preferencia ===
-// Archivo: crear-preferencia.php
-
 header("Content-Type: application/json");
-header("Access-Control-Allow-Origin: https://southsidewear.store");
-header("Access-Control-Allow-Headers: *");
 
-// TOKEN REAL (PRODUCCIÓN)
-$ACCESS_TOKEN = "APP_USR-5371829220109665-111219-f80402a99c412f799bb73ad9921c9b09-2986591652";
+$accessToken = "APP_USR-8206368240104915-111219-763cd6a9ef7171668ef3ac6278079eec-1138212761";
 
-// Leer datos enviados desde el frontend
 $input = json_decode(file_get_contents("php://input"), true);
-$items = $input["items"] ?? [];
+$items    = $input["items"];
+$shipping = $input["shipping"];
+$orderId  = $input["order_id"]; // ID local de la orden
 
-// Validación
-if (!$items || !is_array($items)) {
-    echo json_encode([
-        "error" => true,
-        "message" => "items_missing"
-    ]);
-    exit;
-}
+// Preferencia simple – ya no dependemos del shipping de MP
+$preference = [
+    "items" => $items,
 
-// Construcción del body para Mercado Pago
-$body = [
-    "items" => array_map(function($p) {
-        return [
-            "title" => $p["title"],
-            "quantity" => 1,
-            "unit_price" => floatval($p["unit_price"]),
-            "currency_id" => "ARS"
-        ];
-    }, $items),
+    // Referencia interna para poder enlazar con pending_orders.json
+    "external_reference" => $orderId,
+
+    // Solo usamos el email en MP (ya tenemos el resto en nuestro JSON)
+    "payer" => [
+        "email" => $shipping["email"]
+    ],
+
+    "additional_info" => [
+        "items"    => $items,
+        "order_id" => $orderId
+    ],
+
+    "notification_url" => "https://southsidewear.store/mp-webhook.php",
 
     "back_urls" => [
-        "success" => "https://southsidewear.store/gracias",
-        "failure" => "https://southsidewear.store/error",
-        "pending" => "https://southsidewear.store/pending"
+        "success" => "https://southsidewear.store/gracias.html",
+        "pending" => "https://southsidewear.store/pending.html",
+        "failure" => "https://southsidewear.store/error.html"
     ],
+
     "auto_return" => "approved"
 ];
 
-// === CURL REQUEST ===
 $ch = curl_init();
-
 curl_setopt($ch, CURLOPT_URL, "https://api.mercadopago.com/checkout/preferences");
-curl_setopt($ch, CURLOPT_HTTPHEADER, [
-    "Authorization: Bearer $ACCESS_TOKEN",
-    "Content-Type: application/json"
-]);
 curl_setopt($ch, CURLOPT_POST, true);
-curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($body));
+curl_setopt($ch, CURLOPT_HTTPHEADER, [
+    "Content-Type: application/json",
+    "Authorization: Bearer $accessToken"
+]);
+curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($preference));
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
 $response = curl_exec($ch);
-$httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 curl_close($ch);
 
-// Si Mercado Pago responde mal:
-if (!$response || $httpCode >= 300) {
-    echo json_encode([
-        "error" => true,
-        "message" => "mp_api_error",
-        "httpCode" => $httpCode,
-        "response" => $response
-    ]);
-    exit;
-}
-
-// Respuesta limpia al frontend
 echo $response;
-exit;

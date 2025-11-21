@@ -6,7 +6,7 @@
     "image": "assets/drop1-black.jpg",
     "images": ["assets/drop1-black.jpg"],
     "sizes": ["M", "L"],
-    "description": "Oversize tee 280gsm de algodón premium."
+    "description": "Corte oversize, algodón pesado."
   },
 
   "dead-rider": {
@@ -17,5 +17,15 @@
     "images": ["assets/drop1-white.jpg"],
     "sizes": ["M", "L"],
     "description": "Estampa vintage sobre algodón pesado."
+  },
+
+  "test-product": {
+    "id": "test-product",
+    "name": "TEST PRODUCT",
+    "price": 1,
+    "image": "assets/drop1-black.jpg",
+    "images": ["assets/drop1-black.jpg"],
+    "sizes": ["TEST"],
+    "description": "Producto de prueba para validar pagos y webhooks."
   }
 }

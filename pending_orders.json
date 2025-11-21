@@ -1,0 +1,20 @@
+{
+    "SS-1763700749860-776245": {
+        "items": [
+            {
+                "title": "TEST PRODUCT (TEST)",
+                "quantity": 1,
+                "unit_price": 1
+            }
+        ],
+        "shipping": {
+            "nombre": "Salvador Antonucci",
+            "direccion": "Fournier832",
+            "ciudad": "Puerto Madryn",
+            "codigo_postal": "9120",
+            "email": "salvantonucci2@gmail.com",
+            "telefono": "9280482"
+        },
+        "created_at": "2025-11-21 04:52:30"
+    }
+}
